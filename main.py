@@ -1,12 +1,8 @@
 #!/usr/bin/env python3
-##
-## EPITECH PROJECT, 2022
-## main
-## File description:
-## yams
-##
 
 import sys
 
-def main(argv):
+def main(ac: int = 0, av: list = []):
     return 0
+
+main(len(sys.argv), sys.argv)
