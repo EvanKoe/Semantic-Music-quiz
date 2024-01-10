@@ -18,5 +18,5 @@ python3 -m pip install -r requirements.txt
 ## Starting
 To start the program, use this command:
 ```bash
-python3 main.py
+./quiz
 ```

@@ -1,7 +1,4 @@
-import requests
-import json
 from random import randint
-import os
 from dotenv import load_dotenv
 
 from lib import getAlbumReleaseYear, getRandomAlbumName
@@ -74,7 +71,7 @@ def fetchInfoFromBand(name: str = ""):
 
     band_item = getArtistItemByName(name)
     selected_artist = sp.artist(band_item['id'])
-    result = sp.artist_albums(band_item['id'], album_type='album');
+    result = sp.artist_albums(band_item['id'], album_type='album')
 
     if result is None:
         print("Warning: couldn't get albums")
@@ -99,11 +96,4 @@ def generateQuestions(name: str = ""):
         getRandomAlbumName(selected_artist_albums)
     ))
     return questions
-
-
-artists = getTwentyRandomArtists()
-if artists is None:
-    print("Error: Artists is None")
-    exit(84)
-print(generateQuestions(artists[0]))
 

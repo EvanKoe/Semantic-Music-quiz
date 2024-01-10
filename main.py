@@ -1,57 +1,51 @@
-#!/usr/bin/env python3
-
-import sys
 import curses
 import math
-
-def display_themes(stdscr, themes: list, maxX: int, maxY: int):
-    number_of_lines = math.ceil(len(themes) / 3)
-    middle_height = maxY // 2
-    middle_width = maxX // 2
-    length_line = 0
-
-    i = 0
-    k = 0
-    while i < number_of_lines:
-        yStartStr = middle_height - (number_of_lines // 2) * 5 + i * 5
-        if k < len(themes):
-            length_line += len(themes[k])
-        if k + 1 < len(themes):
-            length_line += len(themes[k + 1]) + 2
-        if k + 2 < len(themes):
-            length_line += len(themes[k + 2]) + 2
-        xStartStr = middle_width - length_line // 2
-
-        if k < len(themes):
-            stdscr.addstr(yStartStr, xStartStr, themes[k])
-            k += 1
-        if k < len(themes):
-            stdscr.addstr(yStartStr, xStartStr + len(themes[k - 1]) + 2, themes[k])
-            k += 1
-        if k < len(themes):
-            stdscr.addstr(yStartStr, xStartStr + len(themes[k - 2]) + len(themes[k - 1]) + 4, themes[k])
-            k += 1
-        length_line = 0
-        i += 1
+from fetch import getTwentyRandomArtists
+from display_themes import display_themes
+from get_index_selected_theme import get_index_selected_theme
 
 def main(argv):
     # init curses
     stdscr = curses.initscr()
     curses.noecho()
     curses.cbreak()
+    curses.start_color()
+    curses.use_default_colors()
+    curses.curs_set(0)
     stdscr.keypad(True)
 
     c = -1
+
+    # random_artists = getTwentyRandomArtists()
+    random_artists = [
+        "TheWeekend", "Arianna Grande", "50 cent", "KIK", "Queen",
+        "Vianney", "One Direction", "The Rolling Stones", "The Beatles", "The Who",
+        "The Clash", "The Cure", "The Police", "The Smiths", "The Strokes",
+        "The Velvet Underground", "The White Stripes", "The XX", "The Zombies", "The 1975",
+    ]
+
+    selected_artists = random_artists[:20] # To be sure there are maximum 20 artists
+    number_of_artists = len(selected_artists)
+    number_of_themes_by_line = 4
+
+    lines = [selected_artists[i:i + number_of_themes_by_line] for i in range(0, number_of_artists, number_of_themes_by_line)]
+    max_line_length = max(len(' '.join(line)) for line in lines)
+
+    curses.init_pair(0, 255, 0) # id 0, white text, black background
+    curses.init_pair(1, 0, 255) # id 1, black text, white background
+
+    index_selected_theme = 0
 
     while c != ord('q'):
         stdscr.clear()
 
         maxY, maxX = stdscr.getmaxyx()
 
-        if (maxY > 20 and maxX > 60):
-            display_themes(stdscr, ["Theme 1", "Theme 2", "Theme 3", "Theme 4", "Theme 5", "Theme 6", "Theme 7", "Theme 8"], maxX, maxY)
+        if (maxY > (5 * math.ceil(number_of_artists / number_of_themes_by_line)) and maxX > max_line_length + number_of_themes_by_line):
+            index_selected_theme = get_index_selected_theme(index_selected_theme, c, number_of_artists, number_of_themes_by_line)
+            display_themes(stdscr, selected_artists, maxX, maxY, number_of_themes_by_line, index_selected_theme)
         else:
-            strInfo = "Please enlarge the window"
+            strInfo = "Please enlarge the terminal"
             stdscr.addstr(maxY // 2, maxX // 2 - len(strInfo) // 2, strInfo)
 
         stdscr.refresh()
