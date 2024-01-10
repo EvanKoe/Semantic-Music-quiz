@@ -20,3 +20,29 @@ To start the program, use this command:
 ```bash
 python3 main.py
 ```
+
+## BACK-END
+
+The back-end is responsible of two things:  
+- fetching 20 random artists from your library  
+- generating questions about a chosen artist  
+  
+### Fetching artists
+  
+To fetch 20 random artists from your library, use this function from `fetch.py`:
+```python
+print(getTwentyRandomArtists())
+  
+>> ['LANDMVRKS', 'Heaven Shall Burn', 'Eminem', 'Daft Punk', 'Æther Realm', 'Confetti', 'Mick Gordon', 'Sakis Tolis', 'Behemoth', 'Nic D', 'Thousand Sun Sky', 'Carameii', 'Poésie Zéro', 'Ghost', 'DaveerCode', 'Alcest', 'I Built the Sky', 'Lindemann', 'Tess', 'Motionless In White']
+```
+  
+Then you can ask your user to select one of them.
+
+### Generating questions about a chosen artist
+  
+To generate questions about a chosen artist <b>from the `getTwentyRandomArtists` function</b>, use the `generateQuestions` function:  
+```python
+generateQuestions("artist_name")
+  
+>> [{ question: answer }, { question: answer }, ...]
+```
