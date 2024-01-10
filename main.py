@@ -28,6 +28,9 @@ def main(argv):
     number_of_artists = len(selected_artists)
     number_of_themes_by_line = 4
 
+    max_length = max(len(artist) for artist in random_artists)
+    artists = [f"{artist.center(max_length)}" for artist in selected_artists]
+
     lines = [selected_artists[i:i + number_of_themes_by_line] for i in range(0, number_of_artists, number_of_themes_by_line)]
     max_line_length = max(len(' '.join(line)) for line in lines)
 
@@ -43,7 +46,7 @@ def main(argv):
 
         if (maxY > (5 * math.ceil(number_of_artists / number_of_themes_by_line)) and maxX > max_line_length + number_of_themes_by_line):
             index_selected_theme = get_index_selected_theme(index_selected_theme, c, number_of_artists, number_of_themes_by_line)
-            display_themes(stdscr, selected_artists, maxX, maxY, number_of_themes_by_line, index_selected_theme)
+            display_themes(stdscr, artists, maxX, maxY, number_of_themes_by_line, index_selected_theme)
         else:
             strInfo = "Please enlarge the terminal"
             stdscr.addstr(maxY // 2, maxX // 2 - len(strInfo) // 2, strInfo)
