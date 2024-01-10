@@ -88,16 +88,29 @@ def fetchInfoFromBand(name: str = ""):
 def generateQuestions(name: str = ""):
     global selected_artist, artist_albums
     questions = []
+    albums = []
 
     if name == "":
         print("Error: empty band")
         return {'error': 'Empty band'}
 
     fetchInfoFromBand(name)
-    questions.append(getAlbumReleaseYear(
-        selected_artist_albums,
-        getRandomAlbumName(selected_artist_albums)
-    ))
+    for i in range(0, 5):
+        album = getRandomAlbumName(selected_artist_albums)
+
+        # Loop to avoid repeating questions on the same album
+        while album in albums:
+            album = getRandomAlbumName(selected_artist_albums)
+
+            # just in case the artist has not so many albums
+            if len(albums) == len(selected_artist_albums):
+                break
+
+        albums.append(album)
+
+        questions.append(getAlbumReleaseYear(
+            selected_artist_albums, album
+        ))
     return questions
 
 
@@ -105,5 +118,7 @@ artists = getTwentyRandomArtists()
 if artists is None:
     print("Error: Artists is None")
     exit(84)
-print(generateQuestions(artists[0]))
+print(f"Selected artist: {artists[0]}")
+questions = generateQuestions(artists[0])
+print(questions)
 
