@@ -219,9 +219,9 @@ def generateQuestions(
     return new_questions[:20]
 
 # Main
-artists = getTwentyRandomArtists()
+# artists = getTwentyRandomArtists()
 # print(artists)
-if artists is None:
-    print("Error: Artists is None")
-    exit(84)
-questions = generateQuestions(artists[0])
+# if artists is None:
+#     print("Error: Artists is None")
+#     exit(84)
+# questions = generateQuestions(artists[0])
