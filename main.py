@@ -81,6 +81,7 @@ def main(argv):
             index_selected_answer = 0
             data = []
             questions = []
+            valid_answers = []
             number_of_questions = 0
         
         if len(data) == 0 and state > 1:
