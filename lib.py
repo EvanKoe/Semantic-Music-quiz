@@ -5,6 +5,7 @@
 # Send global variables from fetch.py as arguments
 #
 from random import randint
+import datetime
 
 
 # print error message and return an object {'error': message}
@@ -40,5 +41,22 @@ def getAlbumReleaseYear(
 
     if release_year is None:
         return error(f"GETALBUMRELEASEYEAR - coudln't find release year for the album '{name}'")
-    return { f"When was the album '{name}' released ?": release_year }
+
+    current_year = datetime.datetime.now().year
+    new_year = int(release_year) + randint(0, 5)
+
+    while new_year > current_year:
+        new_year = int(release_year) + randint(0, 5)
+
+    wrong_answers = [
+        str(int(release_year) - 3),
+        str(new_year),
+        str(int(release_year) - randint(0, 5))
+    ]
+
+    return {
+        "question": f"When was the album '{name}' released ?",
+        "validAnswer": release_year,
+        "wrongAnswers": wrong_answers
+    }
 

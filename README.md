@@ -52,5 +52,11 @@ To generate questions about a chosen artist <b>from the `getTwentyRandomArtists`
 ```python
 generateQuestions("artist_name")
 
->> [{ question: answer }, { question: answer }, ...]
+>> [
+  {
+    "question": str,
+    'validAnswer': str,
+    'wrongAnswers': str[]
+  }
+]
 ```

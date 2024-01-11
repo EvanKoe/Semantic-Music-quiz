@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import requests
 import json
 from random import randint, random
@@ -75,7 +76,7 @@ def fetchInfoFromBand(name: str = ""):
 
     band_item = getArtistItemByName(name)
     selected_artist = sp.artist(band_item['id'])
-    result = sp.artist_albums(band_item['id'], album_type='album')
+    result = sp.artist_albums(band_item['id'])
 
     if result is None:
         print("Warning: couldn't get albums")
@@ -96,18 +97,50 @@ def qReleaseDate(number: int):
         ))
 
 
+# Get an album name from a related artist
+def getAnotherAlbumFromArtist(artist):
+    newArtist = sp.artist_related_artists(artist['id'])
+    artistIndex = randint(0, len(newArtist['artists']) - 1)
+    newAlbums = sp.artist_albums(newArtist['artists'][artistIndex]['id'])
+
+    if len(newAlbums) == 0:
+        return newAlbums['items'][0]['name']
+
+    albumIndex = randint(0, len(newAlbums) - 1)
+
+    if albumIndex == -1 or len(newAlbums['items']) <= albumIndex:
+        return newAlbums['items'][0]['name']
+
+    return newAlbums['items'][albumIndex]['name']
+
+
 # generate questiosn about which songs are in which album
 def qSongsOfAlbums(number: int):
     global selected_artist_albums, questions
-    alreadyAskedSongs = []
 
     for i in range(0, number - 1):
         index = randint(0, len(selected_artist_albums) - 1)
         album = sp.album(selected_artist_albums[index]['id'])['tracks']
         songIndex = randint(0, len(album['items']) - 1)
+
         name = album['items'][songIndex]['name']
-        question = { f"Which album is the song '{name}' part of ?": selected_artist_albums[index]['name'] }
-        questions.append(question)
+        question = f"Which album is the song '{name}' part of ?"
+        answer = selected_artist_albums[index]['name']
+        propositions = []
+
+        for j in range(0, 3):
+            k = randint(0, len(selected_artist_albums) - 1)
+            if k == index or k == -1 or len(selected_artist_albums) == 0:
+                propositions.append(
+                    getAnotherAlbumFromArtist(selected_artist)
+                )
+            propositions.append(selected_artist_albums[k]['name'])
+
+        questions.append({
+            'question': question,
+            'validAnswer': answer,
+            'wrongAnswers': propositions[:3]
+        })
 
 
 # generates a single question about the genre of the artist
@@ -116,10 +149,20 @@ def qGenreOfArtist():
     question = f"Give one genre of {selected_artist['name']}"
 
     if not selected_artist['genres']:
-        return
+        return False
+
+    genres = sp.recommendation_genre_seeds()['genres']
+    new_genres = []
+
+    for i in range(0, 3):
+        new_genres.append(genres[randint(0, len(genres) - 1)])
 
     answer = selected_artist['genres'][0]
-    questions.append({ question: answer })
+    questions.append({
+        'question': question,
+        'validAnswer': answer,
+        'wrongAnswers': new_genres
+    })
 
 
 # Generates a set of questions about the selected_artist
@@ -129,25 +172,26 @@ def generateQuestions(
     songsOfAlbumQuestions: int = 9
 ):
     global selected_artist, artist_albums, questions
+    questions = []
 
     if name == "":
         print("Error: empty band")
         return {'error': 'Empty band'}
 
     fetchInfoFromBand(name)
-    questions = []
 
     qReleaseDate(releaseDateQuestions)
     qSongsOfAlbums(songsOfAlbumQuestions)
-    qGenreOfArtist()
+    if not qGenreOfArtist():
+        qSongsOfAlbums(1)
     return questions
 
 # Main
 # artists = getTwentyRandomArtists()
 # print(artists)
-# if artists is None:
-#     print("Error: Artists is None")
-#     exit(84)
-# print(f"Selected artist: {artists[0]}")
-# questions = generateQuestions(artists[0])
-# print(json.dumps(questions, indent=2))
+""" if artists is None: """
+"""     print("Error: Artists is None") """
+"""     exit(84) """
+""" print(f"Selected artist: {artists[0]}") """
+""" questions = generateQuestions(artists[0]) """
+""" print(json.dumps(questions, indent=2)) """

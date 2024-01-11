@@ -1,7 +1,7 @@
 import curses
 import math
 import random
-from fetch import getTwentyRandomArtists
+from fetch import getTwentyRandomArtists, generateQuestions
 from display_items import display_items
 from get_index_selected_item import get_index_selected_item
 from fake_data import fake_artists, fake_questions
@@ -17,7 +17,8 @@ def main(argv):
 
     c = -1
 
-    selected_artists = fake_artists[:20] # To be sure there are maximum 20 artists
+    api_artists = getTwentyRandomArtists()
+    selected_artists = api_artists[:20]
     number_of_artists = len(selected_artists)
     number_of_themes_by_line = 4
 
@@ -37,27 +38,13 @@ def main(argv):
     index_selected_theme = 0
     index_selected_answer = 0
 
-    number_of_questions = len(fake_questions)
+    number_of_questions = 0
     current_question = 0
     number_of_questions_by_line = 2
 
     questions = []
     valid_answers = []
-
-    # set that in state 2 when link with backend
-    for i in range(number_of_questions):
-      data = fake_questions[i]
-      question = data["question"]
-      validAnswer = data["validAnswer"]
-      wrongAnswers = data["wrongAnswers"]
-      number_of_answers = len(wrongAnswers) + 1
-      random_index = random.randint(0, number_of_answers - 1)
-      valid_answers.append(random_index)
-      answers = wrongAnswers[:random_index] + [validAnswer] + wrongAnswers[random_index:]
-      questions.append({
-        "question": question,
-        "answers": answers
-      })
+    data = []
 
     user_answers = []
 
@@ -69,9 +56,9 @@ def main(argv):
         maxY, maxX = stdscr.getmaxyx()
 
         if c == 10: # Enter
-            if number_of_questions == 0:
-                break
-            elif (state == 2 and current_question < number_of_questions):
+            if (state == 2 and current_question < number_of_questions):
+                if number_of_questions == 0:
+                    break
                 user_answers.append(index_selected_answer)
                 if current_question == number_of_questions - 1:
                     state += 1
@@ -85,21 +72,40 @@ def main(argv):
                 current_question += 1
             else:
               state += 1
+        
         if state > 5:
             state = 1
             user_answers = []
             current_question = 0
             index_selected_theme = 0
             index_selected_answer = 0
+            data = []
+            questions = []
+            number_of_questions = 0
+        
+        if len(data) == 0 and state > 1:
+            data = generateQuestions(selected_artists[index_selected_theme], 11, 10)
+            number_of_questions = len(data)
 
         if (maxY > (5 * math.ceil(number_of_artists / number_of_themes_by_line) + 6) and maxX > max_line_length + number_of_themes_by_line):
             if state == 1:
                 index_selected_theme = get_index_selected_item(index_selected_theme, c, number_of_artists, number_of_themes_by_line)
                 display_items(stdscr, artists, maxX, maxY, number_of_themes_by_line, index_selected_theme, "Select a theme")
             elif state == 2:
-                # get the questions and the answer here when link with back
-                # don't forget to set the valid_answers
-
+                for i in range(number_of_questions):
+                    current_data = data[i]
+                    question = current_data["question"]
+                    validAnswer = current_data["validAnswer"]
+                    wrongAnswers = current_data["wrongAnswers"]
+                    number_of_answers = len(wrongAnswers) + 1
+                    random_index = random.randint(0, number_of_answers - 1)
+                    valid_answers.append(random_index)
+                    answers = wrongAnswers[:random_index] + [validAnswer] + wrongAnswers[random_index:]
+                    questions.append({
+                      "question": question,
+                      "answers": answers
+                    })
+                
                 question = questions[current_question]["question"]
                 answers = questions[current_question]["answers"]
 
@@ -107,7 +113,7 @@ def main(argv):
                 answers = [f"{answer.center(max_length)}" for answer in answers] # fill of spaces to have the same length
 
                 index_selected_answer = get_index_selected_item(index_selected_answer, c, len(answers), number_of_questions_by_line)
-                display_items(stdscr, answers, maxX, maxY, number_of_questions_by_line, index_selected_answer, question)
+                display_items(stdscr, answers, maxX, maxY, number_of_questions_by_line, index_selected_answer, question, current_question)
             elif state == 3:
                 see_result = "See results"
                 stdscr.addstr(maxY // 2, maxX // 2 - len(see_result) // 2, see_result, curses.color_pair(1))
@@ -123,7 +129,7 @@ def main(argv):
 
                 subtitle = "Your answer is correct" if user_answer == valid_answer else "Your answer is wrong"
 
-                display_items(stdscr, answers, maxX, maxY, number_of_questions_by_line, -1, question, subtitle, user_answer, valid_answer)
+                display_items(stdscr, answers, maxX, maxY, number_of_questions_by_line, -1, question, current_question, subtitle, user_answer, valid_answer)
             elif state == 5:
                 num_correct_answers = sum(1 for user, valid in zip(user_answers, valid_answers) if user == valid)
                 total_score = f"Total score: {num_correct_answers}/{number_of_questions}"

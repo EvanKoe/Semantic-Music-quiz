@@ -1,7 +1,7 @@
 import curses
 import math
 
-def display_items(stdscr, items: list, maxX: int, maxY: int, number_of_items_by_line: int, index_selected_item: int, title: str = "", subtitle: str = "", user_answer_index: int = -1, valid_answer_index: int = -1):
+def display_items(stdscr, items: list, maxX: int, maxY: int, number_of_items_by_line: int, index_selected_item: int, title: str = "", index: int = -1, subtitle: str = "", user_answer_index: int = -1, valid_answer_index: int = -1):
     number_of_lines = math.ceil(len(items) / number_of_items_by_line)
     middle_height = maxY // 2
     middle_width = maxX // 2
@@ -34,7 +34,10 @@ def display_items(stdscr, items: list, maxX: int, maxY: int, number_of_items_by_
         length_line = 0
         i += 1
     if title != "":
-        title = f"| {title} |"
+        if index != -1:
+            title = f"| Question {index + 1}: {title} |"
+        else:
+            title = f"| {title} |"
         stdscr.addstr(middle_height - (number_of_lines // 2) * 5 - 5, middle_width - len(title) // 2, title, curses.A_BOLD)
         stdscr.addstr(middle_height - (number_of_lines // 2) * 5 - 6, middle_width - len(title) // 2, '-' * len(title))
         stdscr.addstr(middle_height - (number_of_lines // 2) * 5 - 4, middle_width - len(title) // 2, '-' * len(title))
