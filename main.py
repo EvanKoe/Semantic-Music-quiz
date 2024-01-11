@@ -84,7 +84,7 @@ def main(argv):
             number_of_questions = 0
         
         if len(data) == 0 and state > 1:
-            data = generateQuestions(selected_artists[index_selected_theme], 11, 10)
+            data = generateQuestions(selected_artists[index_selected_theme], 5, 25)
             number_of_questions = len(data)
 
         if (maxY > (5 * math.ceil(number_of_artists / number_of_themes_by_line) + 6) and maxX > max_line_length + number_of_themes_by_line):

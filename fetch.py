@@ -184,7 +184,7 @@ def generateQuestions(
     qSongsOfAlbums(songsOfAlbumQuestions)
     if not qGenreOfArtist():
         qSongsOfAlbums(1)
-    return questions
+    return questions[:20]
 
 # Main
 # artists = getTwentyRandomArtists()
