@@ -44,6 +44,7 @@ def main(argv):
     questions = []
     valid_answers = []
 
+    # set that in state 2 when link with backend
     for i in range(number_of_questions):
       data = fake_questions[i]
       question = data["question"]
@@ -96,6 +97,9 @@ def main(argv):
                 index_selected_theme = get_index_selected_item(index_selected_theme, c, number_of_artists, number_of_themes_by_line)
                 display_items(stdscr, artists, maxX, maxY, number_of_themes_by_line, index_selected_theme, "Select a theme")
             elif state == 2:
+                # get the questions and the answer here when link with back
+                # don't forget to set the valid_answers
+
                 question = questions[current_question]["question"]
                 answers = questions[current_question]["answers"]
 
