@@ -31,6 +31,8 @@ def main(argv):
     curses.init_pair(1, 0, 255) # id 1, black text, white background
     curses.init_pair(2, curses.COLOR_RED, 0) # id 2, red text, white background
     curses.init_pair(3, curses.COLOR_GREEN, 0) # id 3, green text, white background
+    curses.init_pair(4, 0, curses.COLOR_RED)
+    curses.init_pair(5, 0, curses.COLOR_GREEN)
 
     index_selected_theme = 0
     index_selected_answer = 0
@@ -82,8 +84,12 @@ def main(argv):
                 current_question += 1
             else:
               state += 1
-        if state > 4:
-            break
+        if state > 5:
+            state = 1
+            user_answers = []
+            current_question = 0
+            index_selected_theme = 0
+            index_selected_answer = 0
 
         if (maxY > (5 * math.ceil(number_of_artists / number_of_themes_by_line) + 6) and maxX > max_line_length + number_of_themes_by_line):
             if state == 1:
@@ -99,8 +105,8 @@ def main(argv):
                 index_selected_answer = get_index_selected_item(index_selected_answer, c, len(answers), number_of_questions_by_line)
                 display_items(stdscr, answers, maxX, maxY, number_of_questions_by_line, index_selected_answer, question)
             elif state == 3:
-                seeResult = "See results"
-                stdscr.addstr(maxY // 2, maxX // 2 - len(seeResult) // 2, seeResult, curses.color_pair(1))
+                see_result = "See results"
+                stdscr.addstr(maxY // 2, maxX // 2 - len(see_result) // 2, see_result, curses.color_pair(1))
             elif state == 4:
                 question = questions[current_question]["question"]
                 answers = questions[current_question]["answers"]
@@ -113,8 +119,11 @@ def main(argv):
 
                 subtitle = "Your answer is correct" if user_answer == valid_answer else "Your answer is wrong"
 
-                index_selected_answer = get_index_selected_item(index_selected_answer, c, len(answers), number_of_questions_by_line)
-                display_items(stdscr, answers, maxX, maxY, number_of_questions_by_line, index_selected_answer, question, subtitle)
+                display_items(stdscr, answers, maxX, maxY, number_of_questions_by_line, -1, question, subtitle, user_answer, valid_answer)
+            elif state == 5:
+                num_correct_answers = sum(1 for user, valid in zip(user_answers, valid_answers) if user == valid)
+                total_score = f"Total score: {num_correct_answers}/{number_of_questions}"
+                stdscr.addstr(maxY // 2, maxX // 2 - len(total_score) // 2, total_score, curses.A_BOLD)
         else:
             strInfo = "Please enlarge the terminal"
             stdscr.addstr(maxY // 2, maxX // 2 - len(strInfo) // 2, strInfo)
