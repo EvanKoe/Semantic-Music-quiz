@@ -177,6 +177,22 @@ def deleteDuplicateQuestions():
     return new_questions
 
 
+def modifyDuplicateAnswers(newQuestions):
+    for i in range(len(newQuestions)):
+        validAnswer = newQuestions[i]["validAnswer"]
+        wrongAnswers = newQuestions[i]["wrongAnswers"]
+        wrongAnswers = [s.replace(validAnswer, "I don't know") for s in wrongAnswers]
+        if len(wrongAnswers) >= 3:
+            if wrongAnswers[0] == wrongAnswers[1]:
+                wrongAnswers[0] = "I don't know"
+            elif wrongAnswers[1] == wrongAnswers[2]:
+                wrongAnswers[1] = "I don't know"
+            elif wrongAnswers[0] == wrongAnswers[2]:
+                wrongAnswers[0] = "I don't know"
+        newQuestions[i]["wrongAnswers"] = wrongAnswers
+    return newQuestions
+
+
 # Generates a set of questions about the selected_artist
 def generateQuestions(
     name: str = "",
@@ -197,14 +213,9 @@ def generateQuestions(
     if not qGenreOfArtist():
         qSongsOfAlbums(1)
 
-    print("---")
-    print(questions)
-
     new_questions = deleteDuplicateQuestions()
-    
-    print("---")
-    print(new_questions)
-        
+    new_questions = modifyDuplicateAnswers(new_questions)
+
     return new_questions[:20]
 
 # Main

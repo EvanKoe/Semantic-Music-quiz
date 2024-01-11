@@ -106,6 +106,8 @@ def main(argv):
                       "answers": answers
                     })
                 
+                if len(questions) == 0:
+                    break
                 question = questions[current_question]["question"]
                 answers = questions[current_question]["answers"]
 
@@ -118,6 +120,8 @@ def main(argv):
                 see_result = "See results"
                 stdscr.addstr(maxY // 2, maxX // 2 - len(see_result) // 2, see_result, curses.color_pair(1))
             elif state == 4:
+                if len(questions) == 0:
+                    break
                 question = questions[current_question]["question"]
                 answers = questions[current_question]["answers"]
 

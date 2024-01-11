@@ -51,7 +51,7 @@ def getAlbumReleaseYear(
     wrong_answers = [
         str(int(release_year) - 3),
         str(new_year),
-        str(int(release_year) - randint(0, 5))
+        str(int(release_year) - randint(3, 6))
     ]
 
     return {
