@@ -1,9 +1,9 @@
 import curses
 import math
+import random
 from fetch import getTwentyRandomArtists
 from display_items import display_items
 from get_index_selected_item import get_index_selected_item
-from display_questions import display_questions
 from fake_data import fake_artists, fake_questions
 
 def main(argv):
@@ -29,6 +29,8 @@ def main(argv):
 
     curses.init_pair(0, 255, 0) # id 0, white text, black background
     curses.init_pair(1, 0, 255) # id 1, black text, white background
+    curses.init_pair(2, curses.COLOR_RED, 0) # id 2, red text, white background
+    curses.init_pair(3, curses.COLOR_GREEN, 0) # id 3, green text, white background
 
     index_selected_theme = 0
     index_selected_answer = 0
@@ -36,6 +38,25 @@ def main(argv):
     number_of_questions = len(fake_questions)
     current_question = 0
     number_of_questions_by_line = 2
+
+    questions = []
+    valid_answers = []
+
+    for i in range(number_of_questions):
+      data = fake_questions[i]
+      question = data["question"]
+      validAnswer = data["validAnswer"]
+      wrongAnswers = data["wrongAnswers"]
+      number_of_answers = len(wrongAnswers) + 1
+      random_index = random.randint(0, number_of_answers - 1)
+      valid_answers.append(random_index)
+      answers = wrongAnswers[:random_index] + [validAnswer] + wrongAnswers[random_index:]
+      questions.append({
+        "question": question,
+        "answers": answers
+      })
+
+    user_answers = []
 
     state = 1
 
@@ -47,33 +68,53 @@ def main(argv):
         if c == 10: # Enter
             if number_of_questions == 0:
                 break
-            elif (state == 2 and current_question < (number_of_questions - 1)):
+            elif (state == 2 and current_question < number_of_questions):
+                user_answers.append(index_selected_answer)
+                if current_question == number_of_questions - 1:
+                    state += 1
+                    current_question = 0
+                else:
+                  current_question += 1
+                  index_selected_answer = 0
+            elif (state == 4 and current_question < number_of_questions):
+                if current_question == number_of_questions - 1:
+                    state += 1
                 current_question += 1
-                index_selected_answer = 0
             else:
               state += 1
-        if state > 3:
+        if state > 4:
             break
 
-        if (maxY > (5 * math.ceil(number_of_artists / number_of_themes_by_line)) and maxX > max_line_length + number_of_themes_by_line):
+        if (maxY > (5 * math.ceil(number_of_artists / number_of_themes_by_line) + 6) and maxX > max_line_length + number_of_themes_by_line):
             if state == 1:
                 index_selected_theme = get_index_selected_item(index_selected_theme, c, number_of_artists, number_of_themes_by_line)
-                display_items(stdscr, artists, maxX, maxY, number_of_themes_by_line, index_selected_theme)
+                display_items(stdscr, artists, maxX, maxY, number_of_themes_by_line, index_selected_theme, "Select a theme")
             elif state == 2:
-                data = fake_questions[current_question]
-                question = data["question"]
-                validAnswer = data["validAnswer"]
-                wrongAnswers = data["wrongAnswers"]
-                answers = [validAnswer] + wrongAnswers
+                question = questions[current_question]["question"]
+                answers = questions[current_question]["answers"]
 
                 max_length = max(len(answer) for answer in answers)
                 answers = [f"{answer.center(max_length)}" for answer in answers] # fill of spaces to have the same length
 
-                # display_questions(stdscr, maxX, maxY, artists[index_selected_theme])
                 index_selected_answer = get_index_selected_item(index_selected_answer, c, len(answers), number_of_questions_by_line)
-                display_items(stdscr, answers, maxX, maxY, number_of_questions_by_line, index_selected_answer)
+                display_items(stdscr, answers, maxX, maxY, number_of_questions_by_line, index_selected_answer, question)
             elif state == 3:
-                pass
+                seeResult = "See results"
+                stdscr.addstr(maxY // 2, maxX // 2 - len(seeResult) // 2, seeResult, curses.color_pair(1))
+            elif state == 4:
+                question = questions[current_question]["question"]
+                answers = questions[current_question]["answers"]
+
+                max_length = max(len(answer) for answer in answers)
+                answers = [f"{answer.center(max_length)}" for answer in answers] # fill of spaces to have the same length
+
+                user_answer = user_answers[current_question]
+                valid_answer = valid_answers[current_question]
+
+                subtitle = "Your answer is correct" if user_answer == valid_answer else "Your answer is wrong"
+
+                index_selected_answer = get_index_selected_item(index_selected_answer, c, len(answers), number_of_questions_by_line)
+                display_items(stdscr, answers, maxX, maxY, number_of_questions_by_line, index_selected_answer, question, subtitle)
         else:
             strInfo = "Please enlarge the terminal"
             stdscr.addstr(maxY // 2, maxX // 2 - len(strInfo) // 2, strInfo)
