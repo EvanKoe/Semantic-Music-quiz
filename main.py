@@ -124,6 +124,7 @@ def main(argv):
                 num_correct_answers = sum(1 for user, valid in zip(user_answers, valid_answers) if user == valid)
                 total_score = f"Total score: {num_correct_answers}/{number_of_questions}"
                 stdscr.addstr(maxY // 2, maxX // 2 - len(total_score) // 2, total_score, curses.A_BOLD)
+            stdscr.addstr(0, 0, "Press Q to quit", curses.color_pair(1))
         else:
             strInfo = "Please enlarge the terminal"
             stdscr.addstr(maxY // 2, maxX // 2 - len(strInfo) // 2, strInfo)

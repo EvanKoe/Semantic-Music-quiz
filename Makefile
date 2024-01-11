@@ -14,6 +14,5 @@ clean:
 	$(RM) -r __pycache__
 
 fclean: clean
-	$(RM) $(NAME)
 
 re: fclean all
