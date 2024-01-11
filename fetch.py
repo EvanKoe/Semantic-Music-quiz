@@ -165,6 +165,18 @@ def qGenreOfArtist():
     })
 
 
+def deleteDuplicateQuestions():
+    new_questions_strings = []
+    new_questions = []
+    for i in range(len(questions)):
+        currentQuestion = questions[i]
+        currentQuestionStr = currentQuestion["question"]
+        if currentQuestionStr not in new_questions_strings:
+            new_questions_strings.append(currentQuestionStr)
+            new_questions.append(questions[i])
+    return new_questions
+
+
 # Generates a set of questions about the selected_artist
 def generateQuestions(
     name: str = "",
@@ -184,14 +196,21 @@ def generateQuestions(
     qSongsOfAlbums(songsOfAlbumQuestions)
     if not qGenreOfArtist():
         qSongsOfAlbums(1)
-    return questions[:20]
+
+    print("---")
+    print(questions)
+
+    new_questions = deleteDuplicateQuestions()
+    
+    print("---")
+    print(new_questions)
+        
+    return new_questions[:20]
 
 # Main
-# artists = getTwentyRandomArtists()
+artists = getTwentyRandomArtists()
 # print(artists)
-""" if artists is None: """
-"""     print("Error: Artists is None") """
-"""     exit(84) """
-""" print(f"Selected artist: {artists[0]}") """
-""" questions = generateQuestions(artists[0]) """
-""" print(json.dumps(questions, indent=2)) """
+if artists is None:
+    print("Error: Artists is None")
+    exit(84)
+questions = generateQuestions(artists[0])
