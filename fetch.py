@@ -181,15 +181,19 @@ def modifyDuplicateAnswers(newQuestions):
     for i in range(len(newQuestions)):
         validAnswer = newQuestions[i]["validAnswer"]
         wrongAnswers = newQuestions[i]["wrongAnswers"]
+        for answer in wrongAnswers:
+            if answer == validAnswer:
+                print(f"dupplicate wrong answer: {answer}")
         wrongAnswers = [s.replace(validAnswer, "I don't know") for s in wrongAnswers]
+
         if len(wrongAnswers) >= 3:
-            if wrongAnswers[0] == wrongAnswers[1]:
+            if wrongAnswers[0] == wrongAnswers[1] or wrongAnswers[0] == wrongAnswers[2]:
                 wrongAnswers[0] = "I don't know"
             elif wrongAnswers[1] == wrongAnswers[2]:
                 wrongAnswers[1] = "I don't know"
-            elif wrongAnswers[0] == wrongAnswers[2]:
-                wrongAnswers[0] = "I don't know"
+        print(wrongAnswers)
         newQuestions[i]["wrongAnswers"] = wrongAnswers
+
     return newQuestions
 
 
@@ -219,9 +223,10 @@ def generateQuestions(
     return new_questions[:20]
 
 # Main
-# artists = getTwentyRandomArtists()
-# print(artists)
-# if artists is None:
-#     print("Error: Artists is None")
-#     exit(84)
-# questions = generateQuestions(artists[0])
+artists = getTwentyRandomArtists()
+print(artists)
+if artists is None:
+    print("Error: Artists is None")
+    exit(84)
+questions = generateQuestions(artists[0])
+print(json.dumps(questions, indent=2))

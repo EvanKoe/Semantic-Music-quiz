@@ -43,15 +43,15 @@ def getAlbumReleaseYear(
         return error(f"GETALBUMRELEASEYEAR - coudln't find release year for the album '{name}'")
 
     current_year = datetime.datetime.now().year
-    new_year = int(release_year) + randint(0, 5)
+    new_year = int(release_year) + randint(1, 5)
 
     while new_year > current_year:
-        new_year = int(release_year) + randint(0, 5)
+        new_year = int(release_year) + randint(1, 5)
 
     wrong_answers = [
         str(int(release_year) - 3),
         str(new_year),
-        str(int(release_year) - randint(3, 6))
+        str(int(release_year) - randint(4, 7))
     ]
 
     return {
