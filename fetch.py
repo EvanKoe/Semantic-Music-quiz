@@ -96,4 +96,3 @@ def generateQuestions(name: str = ""):
         getRandomAlbumName(selected_artist_albums)
     ))
     return questions
-
