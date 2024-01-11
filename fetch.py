@@ -75,7 +75,7 @@ def fetchInfoFromBand(name: str = ""):
 
     band_item = getArtistItemByName(name)
     selected_artist = sp.artist(band_item['id'])
-    result = sp.artist_albums(band_item['id'], album_type='album');
+    result = sp.artist_albums(band_item['id'], album_type='album')
 
     if result is None:
         print("Warning: couldn't get albums")
@@ -142,14 +142,12 @@ def generateQuestions(
     qGenreOfArtist()
     return questions
 
-
 # Main
-artists = getTwentyRandomArtists()
-print(artists)
-if artists is None:
-    print("Error: Artists is None")
-    exit(84)
-print(f"Selected artist: {artists[0]}")
-questions = generateQuestions(artists[0])
-print(json.dumps(questions, indent=2))
-
+# artists = getTwentyRandomArtists()
+# print(artists)
+# if artists is None:
+#     print("Error: Artists is None")
+#     exit(84)
+# print(f"Selected artist: {artists[0]}")
+# questions = generateQuestions(artists[0])
+# print(json.dumps(questions, indent=2))
